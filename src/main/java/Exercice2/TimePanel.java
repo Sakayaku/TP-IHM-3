@@ -6,8 +6,13 @@ package Exercice2;
 
 import Exercice1.TimeModelEvent;
 import Exercice1.TimeModelListener;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.geom.AffineTransform;
+import java.time.LocalDateTime;
 
 /**
  *
@@ -18,25 +23,65 @@ public class TimePanel extends javax.swing.JPanel implements TimeModelListener {
     /**
      * Creates new form TimePanel
      */
+    private LocalDateTime tempsActuel=LocalDateTime.now();
+    
     public TimePanel() {
         initComponents();
     }
     
     @Override
     public void paintComponent (Graphics g) {
+        Graphics2D g2d=(Graphics2D)g;
         //On fait le super pour ne pas perdre les propriétés du composant, tel que la transparence
-        super.paintComponent(g);
+        super.paintComponent(g2d);
         //g.drawOval(this.getHeight()/2,this.getWidth()/2, this.getHeight(), this.getWidth());
-        g.setColor(Color.gray);
-        g.fillOval(0,0,this.getHeight(),this.getWidth());
-        g.setColor(Color.blue);
-        g.fillOval(this.getHeight()/2,this.getWidth()/2,10,10);
-        g.fillOval(10,this.getWidth()/2, 10, 10);
-        g.fillOval(this.getHeight()/2, 10, 10, 10);
-        g.fillOval(10,this.getWidth(), 10, 10);
-        //utiliser la fonction rotate point pour faire tous les autres points facilement en fonction du centre.
+        g2d.setColor(Color.gray);
+        g2d.fillOval(0,0,this.getHeight(),this.getWidth());
+        g2d.setColor(Color.blue);
+        Point pointCentre=new Point(this.getHeight()/2,this.getWidth()/2);
+        Point pointPrecedent= new Point(this.getHeight()/2,10);
+        int degre=30;
+        for (int i=0;i<12;i++){
+            g2d.fillOval(pointPrecedent.x-5,pointPrecedent.y-5,10,10);
+            pointPrecedent=rotatePoint(pointPrecedent,pointCentre,degre);
+        }
+        int degreHeure=getHourRotation(tempsActuel.getHour());
+        int degreMinute=getMinuteRotation(tempsActuel.getMinute());
+        int degreSeconde=getSecondsRotation(tempsActuel.getSecond());
+        Point pointHeure=rotatePoint(new Point(this.getHeight()/2,10),pointCentre,degreHeure);
+        Point pointMinute=rotatePoint(new Point(this.getHeight()/2,10),pointCentre,degreMinute);
+        Point pointSeconde=rotatePoint(new Point(this.getHeight()/2,10),pointCentre,degreSeconde);
+        g2d.setColor(Color.black);
+        g2d.setStroke(new BasicStroke(8));
+        g2d.drawLine(pointCentre.x, pointCentre.y, pointHeure.x-80, pointHeure.y-80);
+        g2d.setStroke(new BasicStroke(4));
+        g2d.drawLine(pointCentre.x, pointCentre.y, pointMinute.x, pointMinute.y);
+        g2d.setColor(Color.red);
+        g2d.setStroke(new BasicStroke(0));
+        g2d.drawLine(pointCentre.x, pointCentre.y, pointSeconde.x, pointSeconde.y);
     }
     
+    //retourne le degré de rotation d'une seconde sur l'horloge
+    private int getSecondsRotation(int seconds) {
+        return (360/60) * seconds;
+    }
+    //retourn le degré de rotation d'une minute sur l'horloge
+    private int getMinuteRotation(int minutes) {
+        return (360/60) * minutes;
+    }
+    //retourne le degré de rotation d'une heure sur l'horloge
+    private int getHourRotation(int hours) {
+        return (360/12) * hours;
+    }
+    // retourne un point qui a été tourné autour du centre selon le degré
+    private Point rotatePoint(Point point, Point center, int degree) {
+        AffineTransform rotation = new AffineTransform();
+        double angleInRadians = (degree * Math.PI / 180);
+        rotation.rotate(angleInRadians, center.getX(), center.getY());
+        Point result = new Point();
+        rotation.transform(point, result);
+        return result;
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -61,7 +106,8 @@ public class TimePanel extends javax.swing.JPanel implements TimeModelListener {
 
     @Override
     public void timeChanged(TimeModelEvent event) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        tempsActuel=event.getTime();
+        repaint();
     }
 
 

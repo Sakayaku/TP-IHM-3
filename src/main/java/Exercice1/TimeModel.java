@@ -23,8 +23,8 @@ public class TimeModel{
     public TimeModel(){
         listenerList=new EventListenerList();
         timer = new Timer(UPDATE_RATE, e -> fireTimeChangedEvent());
+        timer.start();
     }
-    
     
     public void setTime(LocalDateTime time) {
         this.time = time;

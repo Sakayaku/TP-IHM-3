@@ -11,6 +11,5 @@ import java.util.EventListener;
  * @author FRS4440A
  */
 public interface TimeModelListener extends EventListener{
-    public void timeChanged(TimeModelEvent event); 
-    
+    public void timeChanged(TimeModelEvent event);
 }
