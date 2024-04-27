@@ -5,7 +5,6 @@
 package Exercice1;
 
 import java.time.LocalDateTime;
-import java.util.EventObject;
 import javax.swing.Timer;
 import javax.swing.event.EventListenerList;
 

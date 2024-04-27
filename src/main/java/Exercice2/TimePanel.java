@@ -24,6 +24,7 @@ public class TimePanel extends javax.swing.JPanel implements TimeModelListener {
      * Creates new form TimePanel
      */
     private LocalDateTime tempsActuel=LocalDateTime.now();
+    private int tailleAiguille=80;
     
     public TimePanel() {
         initComponents();
@@ -48,12 +49,12 @@ public class TimePanel extends javax.swing.JPanel implements TimeModelListener {
         int degreHeure=getHourRotation(tempsActuel.getHour());
         int degreMinute=getMinuteRotation(tempsActuel.getMinute());
         int degreSeconde=getSecondsRotation(tempsActuel.getSecond());
-        Point pointHeure=rotatePoint(new Point(this.getHeight()/2,10),pointCentre,degreHeure);
+        Point pointHeure=rotatePoint(new Point(this.getHeight()/2,10+tailleAiguille),pointCentre,degreHeure);
         Point pointMinute=rotatePoint(new Point(this.getHeight()/2,10),pointCentre,degreMinute);
         Point pointSeconde=rotatePoint(new Point(this.getHeight()/2,10),pointCentre,degreSeconde);
         g2d.setColor(Color.black);
         g2d.setStroke(new BasicStroke(8));
-        g2d.drawLine(pointCentre.x, pointCentre.y, pointHeure.x-80, pointHeure.y-80);
+        g2d.drawLine(pointCentre.x, pointCentre.y, pointHeure.x, pointHeure.y);
         g2d.setStroke(new BasicStroke(4));
         g2d.drawLine(pointCentre.x, pointCentre.y, pointMinute.x, pointMinute.y);
         g2d.setColor(Color.red);
