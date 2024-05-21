@@ -1,25 +1,88 @@
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
 package Exercice2;
 
-import Exercice1.TimeModel;
+import Exercice1.TimeModelEvent;
+import Exercice1.TimeModelListener;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.geom.AffineTransform;
+import java.time.LocalDateTime;
 
 /**
  *
  * @author FRS4440A
  */
-public class JClock extends javax.swing.JFrame {
+public class JClock extends javax.swing.JPanel implements TimeModelListener {
 
     /**
-     * Creates new form FrameTime
+     * Creates new form TimePanel
      */
+    private LocalDateTime tempsActuel=LocalDateTime.now();
+    private int tailleAiguille=80;
+    
     public JClock() {
         initComponents();
-        TimeModel modeleTime=new TimeModel();
-        modeleTime.addTimeModelListener(timePanel2);
     }
+    
+    @Override
+    public void paintComponent (Graphics g) {
+        Graphics2D g2d=(Graphics2D)g;
+        //On fait le super pour ne pas perdre les propriétés du composant, tel que la transparence
+        super.paintComponent(g2d);
+        //g.drawOval(this.getHeight()/2,this.getWidth()/2, this.getHeight(), this.getWidth());
+        g2d.setColor(Color.gray);
+        g2d.fillOval(0,0,this.getHeight(),this.getWidth());
+        g2d.setColor(Color.blue);
+        Point pointCentre=new Point(this.getHeight()/2,this.getWidth()/2);
+        Point pointPrecedent= new Point(this.getHeight()/2,10);
+        int degre=30;
+        for (int i=0;i<12;i++){
+            g2d.fillOval(pointPrecedent.x-5,pointPrecedent.y-5,10,10);
+            pointPrecedent=rotatePoint(pointPrecedent,pointCentre,degre);
+        }
+        int degreHeure=getHourRotation(tempsActuel.getHour());
+        int degreMinute=getMinuteRotation(tempsActuel.getMinute());
+        int degreSeconde=getSecondsRotation(tempsActuel.getSecond());
+        Point pointHeure=rotatePoint(new Point(this.getHeight()/2,10+tailleAiguille),pointCentre,degreHeure);
+        Point pointMinute=rotatePoint(new Point(this.getHeight()/2,10),pointCentre,degreMinute);
+        Point pointSeconde=rotatePoint(new Point(this.getHeight()/2,10),pointCentre,degreSeconde);
+        g2d.setColor(Color.black);
+        g2d.setStroke(new BasicStroke(8));
+        g2d.drawLine(pointCentre.x, pointCentre.y, pointHeure.x, pointHeure.y);
+        g2d.setStroke(new BasicStroke(4));
+        g2d.drawLine(pointCentre.x, pointCentre.y, pointMinute.x, pointMinute.y);
+        g2d.setColor(Color.red);
+        g2d.setStroke(new BasicStroke(0));
+        g2d.drawLine(pointCentre.x, pointCentre.y, pointSeconde.x, pointSeconde.y);
+    }
+    
+    //retourne le degré de rotation d'une seconde sur l'horloge
+    private int getSecondsRotation(int seconds) {
+        return (360/60) * seconds;
+    }
+    //retourn le degré de rotation d'une minute sur l'horloge
+    private int getMinuteRotation(int minutes) {
+        return (360/60) * minutes;
+    }
+    //retourne le degré de rotation d'une heure sur l'horloge
+    private int getHourRotation(int hours) {
+        return (360/12) * hours;
+    }
+    // retourne un point qui a été tourné autour du centre selon le degré
+    private Point rotatePoint(Point point, Point center, int degree) {
+        AffineTransform rotation = new AffineTransform();
+        double angleInRadians = (degree * Math.PI / 180);
+        rotation.rotate(angleInRadians, center.getX(), center.getY());
+        Point result = new Point();
+        rotation.transform(point, result);
+        return result;
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -30,72 +93,27 @@ public class JClock extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        timePanel2 = new Exercice2.TimePanel();
+        setMinimumSize(new java.awt.Dimension(500, 500));
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        javax.swing.GroupLayout timePanel2Layout = new javax.swing.GroupLayout(timePanel2);
-        timePanel2.setLayout(timePanel2Layout);
-        timePanel2Layout.setHorizontalGroup(
-            timePanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 500, Short.MAX_VALUE)
-        );
-        timePanel2Layout.setVerticalGroup(
-            timePanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 500, Short.MAX_VALUE)
-        );
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(timePanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGap(0, 500, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(timePanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGap(0, 500, Short.MAX_VALUE)
         );
-
-        pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(JClock.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(JClock.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(JClock.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(JClock.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new JClock().setVisible(true);
-            }
-        });
+    @Override
+    public void timeChanged(TimeModelEvent event) {
+        tempsActuel=event.getTime();
+        repaint();
     }
 
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private Exercice2.TimePanel timePanel2;
     // End of variables declaration//GEN-END:variables
 }
